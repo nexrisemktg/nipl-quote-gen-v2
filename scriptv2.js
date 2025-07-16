@@ -670,12 +670,12 @@ document.addEventListener('DOMContentLoaded', () => {
         </tr>
         <tr class="table-titles">
             <td colspan="2"><strong>Bill To:</strong></td>
-            <td colspan="2"><strong>Customer:</strong></td>
+            <td colspan="2"><strong>Ship to:</strong></td>
         </tr>
         <tr>
             <td><strong>Customer</strong></td>
             <td>${billToCustName}</td>
-            <td><strong>Ship to:</strong></td>
+            <td><strong>Customer:</strong></td>
             <td>${shipToCustName}</td>
         </tr>
         <tr>
