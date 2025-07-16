@@ -1,0 +1,440 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+.container {
+    max-width: 900px;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+    color: #0056b3; /* A Nexrise blue shade */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.input-section label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.input-section input[type="text"],
+.input-section input[type="date"],
+.input-section input[type="number"] {
+    width: calc(100% - 12px);
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.info-text {
+    font-size: 0.9em;
+    color: #666;
+    margin-left: 10px;
+}
+
+#itemsContainer {
+    border: 1px solid #eee;
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    overflow:auto
+}
+
+.item-row {
+    display: grid;
+    grid-template-columns: 120px 60px 1fr 80px 100px 30px; /* SKU, Qty, Desc, Rate, Amount, Remove Btn */
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #eee;
+}
+
+.item-row:last-child {
+    border-bottom: none;
+}
+
+.item-row input, .item-row span {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background-color: #fff;
+}
+.item-row .description-display,
+.item-row .rate-display,
+.item-row .item-amount-display {
+    background-color: #e9e9e9;
+    border: 1px solid #ccc;
+    font-size: 0.9em;
+    min-height: 20px; /* Ensure consistent height */
+}
+
+.remove-item-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.remove-item-btn:hover {
+    background-color: #c82333;
+}
+
+button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+    display: block;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+/* --- Styles for the generated Quote PDF HTML --- */
+/* These styles will be embedded or linked in the generated HTML */
+
+.quote-page {
+    font-family: 'Arial', sans-serif;
+    font-size: 10pt;
+    color: #333;
+    width: 210mm; /* A4 width */
+    min-height: 297mm; /* A4 height */
+    margin: 0 auto;
+    padding: 20mm;
+    box-sizing: border-box;
+    background: #fff;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.quote-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+}
+
+.quote-header .logo {
+    width: 150px; /* Adjust as needed */
+    height: auto;
+    margin-right: 20px;
+}
+
+.quote-header .title-block {
+    text-align: right;
+}
+
+.quote-header .title-block h1 {
+    font-size: 28pt;
+    margin: 0;
+    color: #333;
+    text-align: right;
+}
+
+.quote-header .title-block .quote-num {
+    font-size: 12pt;
+    color: #666;
+    margin-top: 5px;
+}
+
+.address-block {
+    margin-bottom: 20px;
+    line-height: 1.5;
+    font-size: 10pt;
+}
+
+.address-block strong {
+    font-size: 11pt;
+    color: #000;
+}
+
+.quote-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 30px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.quote-details div {
+    display: flex;
+    justify-content: space-between;
+}
+
+.quote-details span:first-child {
+    font-weight: bold;
+    color: #555;
+}
+
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+    font-size: 9.5pt;
+}
+
+.items-table th, .items-table td {
+    border: 1px solid #ddd;
+    padding: 8px 10px;
+    text-align: left;
+}
+
+.items-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    color: #555;
+}
+
+.items-table .text-right {
+    text-align: right;
+}
+
+.items-table td:nth-child(1) { width: 3%; } /* # */
+.items-table td:nth-child(2) { width: 45%; } /* Item & Description */
+.items-table td:nth-child(3) { width: 8%; text-align: right; } /* Qty */
+.items-table td:nth-child(4) { width: 15%; text-align: right; } /* Rate */
+.items-table td:nth-child(5) { width: 12%; text-align: right; } /* Discount (value) - not percentage */
+.items-table td:nth-child(6) { width: 15%; text-align: right; } /* Amount */
+
+
+.summary-section {
+    width: 300px; /* Fixed width for summary block */
+    float: right;
+    margin-bottom: 30px;
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px dashed #eee;
+}
+
+.summary-row:last-child {
+    border-bottom: none;
+    font-weight: bold;
+    font-size: 12pt;
+    background-color: #f0f0f0;
+    padding: 10px 0;
+}
+
+.summary-row .label {
+    font-weight: bold;
+}
+
+.summary-row .value {
+    text-align: right;
+}
+
+.terms-conditions {
+    clear: both; /* Clear float from summary section */
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+    font-size: 9pt;
+    line-height: 1.6;
+}
+
+.terms-conditions h3 {
+    font-size: 11pt;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+/* Styles for print media - to ensure clean PDF output */
+@media print {
+    body {
+        margin: 0;
+        padding: 0;
+        background: none;
+        -webkit-print-color-adjust: exact; /* For better background/color printing */
+    }
+    .container {
+        box-shadow: none;
+        border-radius: 0;
+        margin: 0;
+        padding: 0;
+    }
+    /* Hide input form elements when printing */
+    .input-section, #itemsContainer, button, h1, h2 {
+        display: none !important;
+    }
+    /* Only show the generated quote-page */
+    .quote-page {
+        display: block !important;
+    }
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+.container {
+    max-width: 900px;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+    color: #0056b3; /* A Nexrise blue shade */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.input-section label,
+.input-section input[type="checkbox"] + label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.input-section input[type="text"],
+.input-section input[type="date"],
+.input-section input[type="number"],
+.input-section textarea,
+.input-section select {
+    width: calc(100% - 12px);
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box; /* Ensures padding doesn't expand width */
+}
+
+.input-group {
+    display: flex;
+    gap: 20px;
+}
+.input-group .input-section {
+    flex: 1;
+}
+
+
+.info-text {
+    font-size: 0.9em;
+    color: #666;
+    margin-left: 10px;
+}
+
+#itemsContainer {
+    border: 1px solid #eee;
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+.item-row {
+    display: grid;
+    /* SKU, Qty, Desc, Rate, Discount (%), Amount, Remove Btn */
+    grid-template-columns: 100px 50px 1fr 80px 70px 100px 30px;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #eee;
+}
+
+.item-row:last-child {
+    border-bottom: none;
+}
+
+.item-row input, .item-row span {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background-color: #fff;
+    font-size: 0.9em;
+}
+.item-row .description-display,
+.item-row .rate-display,
+.item-row .item-amount-display {
+    background-color: #e9e9e9;
+    border: 1px solid #ccc;
+    font-size: 0.9em;
+    min-height: 20px; /* Ensure consistent height */
+}
+.item-row .discount-per-item-input {
+    width: 100%; /* Make input fill its grid cell */
+}
+
+.remove-item-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    min-width: 30px; /* Ensure button doesn't shrink too much */
+}
+.remove-item-btn:hover {
+    background-color: #c82333;
+}
+
+.summary-input-section {
+    background-color: #eaf6ff;
+    border: 1px solid #b3d9ff;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+.summary-input-section h3 {
+    margin-top: 0;
+    color: #0056b3;
+}
+.summary-input-section p {
+    margin: 5px 0;
+    display: flex;
+    justify-content: space-between;
+}
+.summary-input-section p strong {
+    font-size: 1.1em;
+}
+
+button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+    display: block;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #218838;
+}

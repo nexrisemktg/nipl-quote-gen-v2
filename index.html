@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexrise India Quotation Generator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Quotation Generator</h1>
+
+        <div class="input-section">
+            <label for="firmSelect">Select Firm:</label>
+            <select id="firmSelect" required>
+                </select>
+        </div>
+
+        <div class="input-section">
+            <label for="subject">Subject:</label>
+            <input type="text" id="subject" placeholder="Enter quote subject" required>
+        </div>
+
+        <div class="input-section">
+            <label for="quoteDate">Quote Date:</label>
+            <input type="date" id="quoteDate" required>
+            <span id="expiryDateDisplay" class="info-text"></span>
+        </div>
+
+        <div class="input-group">
+            <div class="input-section">
+                <label for="placeOfSupply">Place of Supply:</label>
+                <input type="text" id="placeOfSupply" placeholder="e.g., Mumbai, Maharashtra" required>
+            </div>
+            <div class="input-section">
+                <label for="salesperson">Salesperson:</label>
+                <input type="text" id="salesperson" placeholder="Salesperson Name" required>
+            </div>
+        </div>
+
+        <h2>Bill To</h2>
+        <div class="input-section">
+            <label for="billToCustomerName">Customer Name:</label>
+            <input type="text" id="billToCustomerName" placeholder="Customer Name" required>
+        </div>
+        <div class="input-section">
+            <label for="billToCustomerAddress">Customer Address:</label>
+            <textarea id="billToCustomerAddress" placeholder="Customer Address" rows="3" required></textarea>
+        </div>
+        <div class="input-section">
+            <label for="billToContactPerson">Contact Person:</label>
+            <input type="text" id="billToContactPerson" placeholder="Contact Person Name" required>
+        </div>
+         <div class="input-section">
+            <label for="billToContactNumber">Contact Person Number:</label>
+            <input type="text" id="billToContactNumber" placeholder="Contact Person Number" required>
+        </div>
+
+        <h2>Ship To</h2>
+        <div class="input-section">
+            <input type="checkbox" id="sameAsBilling" checked>
+            <label for="sameAsBilling">Same as Billing</label>
+        </div>
+        <div class="input-section">
+            <label for="shipToCustomerName">Customer Name:</label>
+            <input type="text" id="shipToCustomerName" placeholder="Shipping Customer Name">
+        </div>
+        <div class="input-section">
+            <label for="shipToShippingAddress">Shipping Address:</label>
+            <textarea id="shipToShippingAddress" placeholder="Shipping Address" rows="3"></textarea>
+        </div>
+        <div class="input-section">
+            <label for="shipToContactPerson">Contact Person:</label>
+            <input type="text" id="shipToContactPerson" placeholder="Shipping Contact Person Name">
+        </div>
+         <div class="input-section">
+            <label for="shipToContactNumber">Contact Person:</label>
+            <input type="text" id="shipToContactNumber" placeholder="Shipping Contact Person Number" required>
+        </div>
+
+        <h2>Items</h2>
+        <div id="itemsContainer">
+            <div class="item-row">
+                <input type="text" class="sku-input" placeholder="SKU" list="skuOptions">
+                <datalist id="skuOptions"></datalist>
+                <input type="number" class="qty-input" placeholder="Qty" min="1" value="1">
+                <span class="description-display"></span>
+                <span class="rate-display"></span>
+                <input type="number" class="discount-per-item-input" placeholder="Disc (%)" min="0" max="100" value="0">
+                <span class="item-amount-display"></span>
+                <button type="button" class="remove-item-btn">X</button>
+            </div>
+        </div>
+        <button type="button" id="addItemBtn">+ Add Item</button>
+
+        <div class="summary-input-section">
+            <h3>Current Summary:</h3>
+            <p>Sub Total (after item discounts): <span id="displaySubTotal">Rs.0.00</span></p>
+            <p>GST (18%): <span id="displayGSTAmount">Rs.0.00</span></p>
+            <p><strong>Grand Total: <span id="displayTotalAmount">Rs.0.00</span></strong></p>
+        </div>
+
+        <button type="button" id="generateQuoteBtn">Generate Quote PDF</button>
+    </div>
+
+    <script src="masterComponents.js"></script>
+    <script src="scriptv2.js"></script>
+</body>
+</html>
