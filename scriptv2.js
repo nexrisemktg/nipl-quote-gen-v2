@@ -16,14 +16,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const billToCustomerAddress = document.getElementById('billToCustomerAddress');
     const billToContactPerson = document.getElementById('billToContactPerson');
     const billToContactNumber = document.getElementById('billToContactNumber'); // NEW: Contact Person Number
-
+    const billToContactEmail = document.getElementById('billToContactEmail'); // NEW: Contact Person Email
     // NEW: Ship To details
     const sameAsBillingCheckbox = document.getElementById('sameAsBilling');
     const shipToCustomerName = document.getElementById('shipToCustomerName');
     const shipToShippingAddress = document.getElementById('shipToShippingAddress');
     const shipToContactPerson = document.getElementById('shipToContactPerson');
     const shipToContactNumber = document.getElementById('shipToContactNumber'); // NEW: Shipping Contact Person Number
-
+    const shipToContactEmail = document.getElementById('shipToContactEmail'); // NEW: Shipping Contact Email
     // NEW: Place of Supply & Salesperson
     const placeOfSupplyInput = document.getElementById('placeOfSupply');
     const salespersonInput = document.getElementById('salesperson');
@@ -74,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     billToCustomerAddress.addEventListener('input', copyBillToToShipTo);
     billToContactPerson.addEventListener('input', copyBillToToShipTo);
     billToContactNumber.addEventListener('input', copyBillToToShipTo); // NEW: Contact Number
+    billToContactEmail.addEventListener('input', copyBillToToShipTo); 
 
     generateQuoteBtn.addEventListener('click', generateQuote);
 
@@ -97,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <input type="text" class="sku-input" placeholder="SKU" list="skuOptions">
             <input type="number" class="qty-input" placeholder="Qty" min="1" value="1">
             <span class="description-display"></span>
-            <span class="rate-display"></span>
+            <input type="number" class="rate-input" placeholder="Rate" min="0" step="0.01">
             <input type="number" class="discount-per-item-input" placeholder="Disc (%)" min="0" max="100" value="0">
             <span class="item-amount-display"></span>
             <button type="button" class="remove-item-btn">X</button>
@@ -118,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const skuInput = itemRow.querySelector('.sku-input');
         const qtyInput = itemRow.querySelector('.qty-input');
         const descriptionDisplay = itemRow.querySelector('.description-display');
-        const rateDisplay = itemRow.querySelector('.rate-display');
+        const rateInput = itemRow.querySelector('.rate-input');
         const discountPerItemInput = itemRow.querySelector('.discount-per-item-input'); // NEW
         const itemAmountDisplay = itemRow.querySelector('.item-amount-display');
 
@@ -128,22 +129,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (target === skuInput) {
             selectedComponent = masterComponents.find(c => c.sku.toLowerCase() === skuInput.value.toLowerCase());
             if (selectedComponent) {
-                descriptionDisplay.textContent = selectedComponent.description;
-                rateDisplay.textContent = selectedComponent.rate.toFixed(2);
+                descriptionDisplay.textContent = selectedComponent.name || selectedComponent.description;
+                rateInput.value = selectedComponent.rate.toFixed(2);
             } else {
                 descriptionDisplay.textContent = 'Invalid SKU';
-                rateDisplay.textContent = '0.00';
+                rateInput.value = '';
             }
         } else {
-            // If quantity or discount changes, re-find component if SKU is already set
+            // If quantity, rate, or discount changes, re-find component if SKU is already set
             selectedComponent = masterComponents.find(c => c.sku.toLowerCase() === skuInput.value.toLowerCase());
         }
 
         // Calculate item amount
-        if (selectedComponent && !isNaN(qtyInput.value) && qtyInput.value > 0) {
-            const qty = parseFloat(qtyInput.value);
-            const rate = selectedComponent.rate;
-            const itemDiscountPercent = parseFloat(discountPerItemInput.value) || 0;
+        const qty = parseFloat(qtyInput.value);
+        const rate = parseFloat(rateInput.value);
+        const itemDiscountPercent = parseFloat(discountPerItemInput.value) || 0;
+        if (!isNaN(rate) && !isNaN(qty) && qty > 0) {
             const netRate = rate * (1 - itemDiscountPercent / 100);
             const amount = qty * netRate;
             itemAmountDisplay.textContent = amount.toFixed(2);
@@ -164,14 +165,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const skuInput = itemRow.querySelector('.sku-input');
                 const qtyInput = itemRow.querySelector('.qty-input');
                 const descriptionDisplay = itemRow.querySelector('.description-display');
-                const rateDisplay = itemRow.querySelector('.rate-display');
+                const rateInput = itemRow.querySelector('.rate-input');
                 const discountPerItemInput = itemRow.querySelector('.discount-per-item-input'); // NEW
                 const itemAmountDisplay = itemRow.querySelector('.item-amount-display');
 
                 skuInput.value = '';
                 qtyInput.value = '1';
                 descriptionDisplay.textContent = '';
-                rateDisplay.textContent = '';
+                rateInput.value = '';
                 discountPerItemInput.value = '0'; // NEW: Reset discount
                 itemAmountDisplay.textContent = '';
             }
@@ -212,6 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
             shipToShippingAddress.value = '';
             shipToContactPerson.value = '';
             shipToContactNumber.value = ''; // NEW: Reset Shipping Contact Number
+            shipToContactEmail.value = ''; // NEW: Reset Shipping Contact Email
         }
     }
 
@@ -221,6 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
             shipToShippingAddress.value = billToCustomerAddress.value;
             shipToContactPerson.value = billToContactPerson.value;
             shipToContactNumber.value = billToContactNumber.value; // NEW: Copy Contact Number
+            shipToContactEmail.value = billToContactEmail.value; // NEW: Copy Contact Email
         }
     }
 
@@ -291,7 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return result + ' Only';
 }
 
-
+// Generate quote function
 
     function generateQuote() {
         const selectedFirmKey = firmSelect.value;
@@ -306,19 +309,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const billToCustAddress = billToCustomerAddress.value.trim(); // NEW
         const billToContPerson = billToContactPerson.value.trim(); // NEW
         const billToContNumber = billToContactNumber.value.trim(); // NEW: Contact Number
-
+        const billToContEmail = billToContactEmail.value.trim(); // NEW: Contact Email
+        
+        
         let shipToCustName = ''; // NEW
         let shipToShipAddress = ''; // NEW
         let shipToContPerson = ''; // NEW
+        let shipToContEmail = ''; // NEW
 
         if (sameAsBillingCheckbox.checked) {
             shipToCustName = billToCustName;
             shipToShipAddress = billToCustAddress;
             shipToContPerson = billToContPerson;
+            shipToContEmail = billToContEmail;
         } else {
             shipToCustName = shipToCustomerName.value.trim();
             shipToShipAddress = shipToShippingAddress.value.trim();
             shipToContPerson = shipToContactPerson.value.trim();
+            shipToContEmail = shipToContactEmail.value.trim();
         }
 
         const placeOfSupply = placeOfSupplyInput.value.trim(); // NEW
@@ -326,7 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const quoteDateStr = quoteDateInput.value;
 
-        if (!billToCustName || !billToCustAddress || !billToContPerson || !subject || !placeOfSupply || !salesperson || !quoteDateStr || !shipToCustName || !shipToShipAddress || !shipToContPerson) {
+        if (!billToCustName || !billToCustAddress || !billToContPerson || !billToContEmail ||  !subject || !placeOfSupply || !salesperson || !quoteDateStr || !shipToCustName || !shipToShipAddress || !shipToContPerson || !shipToContEmail) {
             alert('Please fill in all required fields (Bill To, Ship To, Subject, Place of Supply, Salesperson, Quote Date).');
             return;
         }
@@ -339,10 +347,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const sku = row.querySelector('.sku-input').value;
             const qty = parseInt(row.querySelector('.qty-input').value);
             const discountPerItem = parseFloat(row.querySelector('.discount-per-item-input').value) || 0; // NEW
+            const rateInput = row.querySelector('.rate-input');
+            const rate = parseFloat(rateInput.value);
             const component = masterComponents.find(c => c.sku.toLowerCase() === sku.toLowerCase());
 
-            if (component && qty > 0) {
-                const rate = component.rate;
+            if (component && qty > 0 && !isNaN(rate)) {
                 const netRate = rate * (1 - discountPerItem / 100);
                 const itemAmount = qty * netRate;
                 const itemDiscountAmount = (qty * rate) - itemAmount; // Actual discount amount for this item
@@ -352,8 +361,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     id: index + 1,
                     sku: sku,
                     description: component.description,
+                    sac: component.sac || '', // <-- Use sac instead of hsn
                     qty: qty,
-                    rate: rate, // Original rate
+                    rate: rate, // Use edited rate
                     discountPercent: discountPerItem, // Percentage for display if needed
                     discountAmount: itemDiscountAmount, // Actual discount value
                     netAmountPerUnit: netRate, // Rate after discount, per unit
@@ -384,10 +394,11 @@ document.addEventListener('DOMContentLoaded', () => {
         let itemsHtml = '';
         items.forEach(item => {
             itemsHtml += `
-                <tr>
+                <tr class="item-row">
                     <td>${item.id}</td>
                     <td>${item.sku}</td>
                     <td>${item.description}</td>
+                    <td>${item.sac}</td>
                     <td class="text-right">${item.qty}</td>
                     <td class="text-right">${item.rate.toFixed(2)}</td>
                     <td class="text-right">${item.discountAmount.toFixed(2)}</td> 
@@ -397,49 +408,68 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // NEW: Embedded CSS updated for new layout and robustness
-        const embeddedCss = `body{
+        const embeddedCss = `
         .container {
-            max-width: 1200px;
-      margin: 0 auto;
-      padding: 0px;
-      border: 1px solid #1b1b1b;
-      font-family: Arial, sans-serif;};
-         } 
+            width: 1000px;
+            height: auto;
+            margin: 0 auto;
+             position: relative;
+            padding: 0px;
+            font-family: Arial, sans-serif;
+            overflow: hidden; 
+            };
       *{
-         box-sizing: unset;}
-
-    {
-        
-        font-size: 8px;
-        margin: 0px, auto;
-        border: 1px solid #1b1b1b;
-        padding: 10px;
-        width: 800px;
-    }
+         box-sizing: unset;
+         border-collapse: collapse}
     table {
         width: 100%;
         border-collapse: collapse;
-
     }
+        td{
+            border-collapse: collapse;
+        }
+    .firm-details{
+        font-size:12px;
+    }
+    .firm-details strong{
+        font-size: 20px;
+        }
     .header-table td {
         padding: 10px;
-        vertical-align: top;
+        vertical-align: middle;
     }
     .terms-conditions{
     padding:10px
     }
     .header-table{
-        border-bottom: solid 1px #1b1b1b;
+        border: solid 1px #1b1b1b;
+          border-collapse: collapse;
+
     }
-    
+    .header-table p{
+        font-size:30px;
+        font-weight: bold;
+    }
     .header-left {
         /* Use flexbox to align logo and company details horizontally */
         display: flex;
-    align-items: center; /* Vertically align items in the middle */
-      border-right:1px solid #1b1b1b;
+        align-items: center; /* Vertically align items in the middle */
+        border-right:1px solid #1b1b1b;
+        border-collapse: collapse;
+
 
     }
+    body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    }
 
+    html {
+    width: 100%;
+    height: 100%;
+    }
       .header-right{
       display: flex;
     flex: 1 1 auto;
@@ -459,18 +489,12 @@ document.addEventListener('DOMContentLoaded', () => {
         padding: 5px;
     }
 
-    .logo {
-        width: 150px; /* Adjust as needed */
-        margin-right: 10px; /* Space between logo and text */
-        flex-shrink: 0; /* Prevent logo from shrinking */
-
-    }
     .company-details {
         /* No need for inline-block or vertical-align here due to flexbox */
         flex-grow: 1; /* Allow company details to take up remaining space */
     }
     .quote-title {
-        font-size: 24px;
+        font-size: 32px;
         font-weight: bold;
         color: #333;
         margin-bottom: 5px;
@@ -481,24 +505,35 @@ document.addEventListener('DOMContentLoaded', () => {
         font-weight: bold;
         margin-top: 10px;
         margin-bottom: 5px;
+        
     }
     .Upper-table td {
         padding: 5px;
         text-align: left;
         width:25%
     }
+    .Upper-table{
+        border-right: solid 1px #1b1b1b;
+        border-left: solid 1px #1b1b1b;
+    }
     .table-titles {
         background-color: #f2f2f2;
         border-bottom: 1px solid #1b1b1b;
         border-top: 1px solid #1b1b1b;
+
         }
     .Lower-table td {
         padding: 5px;
         border: 1px solid #1b1b1b;
         text-align: left;
     }
+        .item-table{
+            border-top: solid 1px #1b1b1b;
+        }
     .item-table th, .item-table td {
-        border: 1px solid #1b1b1b;
+        border-right: solid 1px #1b1b1b;
+        border-bottom: solid 1px #1b1b1b;
+        border-left: solid 1px black;
         padding: 5px;
         vertical-align: top;
     }
@@ -527,12 +562,13 @@ document.addEventListener('DOMContentLoaded', () => {
         width: 30%;
         margin-top: 10px;
     }
-        .logo{
+    .logo{
          display: flex;
         justify-content: center;
         align-items: center;
-        height: 100px;
-        }
+        height: 80px;
+        border-right: solid 1px #1b1b1b;
+    }
 
     .totals-tables td {
         padding: 3px;
@@ -543,29 +579,27 @@ document.addEventListener('DOMContentLoaded', () => {
         text-align: left;
         font-weight: bold;
     }
-   .subtotal-row td:nth-child(2),
-.subtotal-row td:nth-child(3),
-.gst-row td:nth-child(2),
-.gst-row td:nth-child(3),
-.total-row td:nth-child(2),
-.total-row td:nth-child(3) {
-    text-align: right;
-    font-style: italic
+    .subtotal-row td:nth-child(2),
+    .subtotal-row td:nth-child(3),
+    .gst-row td:nth-child(2),
+    .gst-row td:nth-child(3),
+    .total-row td:nth-child(2),
+    .total-row td:nth-child(3) {
+        text-align: right;
+        font-style: italic
 }
 .Upper-table tr td:nth-child(2){
     border-right: 1px solid #1b1b1b;
     background-color: lightred
     }
 
-   .total-row td:nth-child(1) {
-    border: 0}
     .total-row {
         font-weight: bold;
         border-top: 1px solid #1b1b1b;
     }
     .terms-conditions {
         margin-top: 20px;
-        border-top: 1px solid #1b1b1b;
+
         padding-top: 10px;
     }
     .terms-conditions ol {
@@ -579,10 +613,6 @@ document.addEventListener('DOMContentLoaded', () => {
     .footer-note {
         margin-top: 10px;
         font-style: italic;
-    }
-    .signature-area {
-        margin-top: 30px;
-        text-align: right;
     }
     .signature-line {
         border-top: 1px solid #000;
@@ -607,22 +637,41 @@ document.addEventListener('DOMContentLoaded', () => {
         vertical-align:middle;
         text-align:right
     }
+    .tnc-table{
+        page-break-inside: avoid;
+        border-left: solid 1px #1b1b1b;
+        border-right: solid 1px #1b1b1b;
+        border-bottom: solid 1px #1b1b1b;
+    }
+    .item-row{
+        page-break-inside: avoid;
+    }
+    // .signature-area{
+    //     position: relative;
+    // }
+    .signature-area img,
+    .signature-area span {
+        position: absolute;  
+        bottom: 20px;          
+        right: 20px;          
+}
+    .signature-area span {
+        display: block;
+        text-align: right;
+}
+    .signature-area img {
+    bottom: 70px;
+    }
+
 
 
     // Print styles
-//     @media print{
-//    td{
-//         font-size: 12px;}
-//         .item-table thead{
-//         font-size: 12px;
-//         }
-//     .header-table tr td:nth-child(3)  {
-//         line-height:20px;
-//         background:black;
-//     }    
-    
+    @media print {
+        .container{
+            transform: scale(0.8); 
+            transform-origin: top left; /* Scale down from the top left corner */
+        }
     }
-    
     `;
 
 
@@ -630,24 +679,24 @@ document.addEventListener('DOMContentLoaded', () => {
              <!DOCTYPE html>
 <html>
 <head>
-<title>Quotation from ${selectedFirm.name} to ${billToCustName}</title>
+<title>Quotation ${finalQuoteNumber}_${billToCustName}</title>
 <style>${embeddedCss}</style>
-<meta name="viewport" content="width=1024, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 </head>
 <body>
     <div class="container">
     <table class="header-table">
         <tr>
-            <td class="logo"><img width="150px" src="${selectedFirm.logo}"</td>
-            <td>
+            <td class="logo"><img width="200px" src="${selectedFirm.logo}"</td>
+            <td class="firm-details">
                 <strong>${selectedFirm.name}</strong>,<br>
                 ${selectedFirm.address}<br>
                 GSTIN - ${selectedFirm.gstin}<br>
                 E-Mail - ${selectedFirm.email}<br>
                 Tel: ${selectedFirm.tel}
             </td>
-            <td style=" " ><h2>Quote</h2><br>${finalQuoteNumber}</td>
+            <td><p>QUOTE</p>${finalQuoteNumber}</td>
         </tr>
     </table>
    
@@ -669,13 +718,14 @@ document.addEventListener('DOMContentLoaded', () => {
              
         </tr>
         <tr class="table-titles">
-            <td colspan="2"><strong>Bill To:</strong></td>
-            <td colspan="2"><strong>Ship to:</strong></td>
+            <td colspan="2" style="border-right:1px solid #1b1b1b; border-collapse: collapse;
+" ><strong>Billing Details:</strong></td>
+            <td colspan="2"><strong>Shipping Details:</strong></td>
         </tr>
         <tr>
             <td><strong>Customer</strong></td>
             <td>${billToCustName}</td>
-            <td><strong>Customer:</strong></td>
+            <td><strong>Ship to:</strong></td>
             <td>${shipToCustName}</td>
         </tr>
         <tr>
@@ -694,8 +744,14 @@ document.addEventListener('DOMContentLoaded', () => {
             <td><strong>Contact Number</strong></td>
             <td>${billToContNumber}</td>
             <td><strong>Contact Number</strong></td>
-            <td>${shipToContactNumber.value || '(Not Provided)'}</td>
-        </tr>
+            <td>${shipToContactNumber.value}</td>
+            </tr>
+        <tr>
+            <td><strong>Contact Email</strong></td>
+            <td>${billToContEmail}</td>
+            <td><strong>Contact Email</strong></td>
+            <td>${shipToContEmail}</td>
+            </tr>    
         <tr class="table-titles">
             <td colspan="4"><strong>Subject</strong></td>
         </tr>
@@ -706,12 +762,13 @@ document.addEventListener('DOMContentLoaded', () => {
     </table>
 
 
-    <table class="item-table" style="margin-top: 10px;">
+    <table class="item-table">
         <thead>
             <tr>
                 <th class="serial-number">Sr. No.</th>
                 <th class="item-sku">SKU</th>
                 <th class="description"> Item & Description</th>
+                <th class="sac">HSN/SAC</th>
                 <th class="hsn">Qty</th>
                 <th class="rate">Rate</th>
                 <th class="Discount">Discount</th>
@@ -720,36 +777,48 @@ document.addEventListener('DOMContentLoaded', () => {
         </thead>
         <tbody>
             ${itemsHtml}
+            <tr style ="height: 24px;">
+                <td colspan="8"></td> <!---empty row--->
+            </tr>
             <tr class="subtotal-row">
-                <td colspan="3" >Total in Words : </td>
+                <td colspan="4" >Total in Words : </td>
                 <td class="label" colspan="2">Sub Total</td>
                 <td colspan="2">Rs.${subTotal.toFixed(2)}</td>
             </tr>
             
             <tr class="gst-row">
-                <td colspan="3"> ${numberToWords(Math.round(totalAmount))}</td>
+                <td colspan="4"> ${numberToWords(Math.round(totalAmount))}</td>
                 <td colspan="2" class="label">GST (18%)</td>
                 <td colspan="2">Rs.${gstAmount.toFixed(2)}</td>
             </tr>
             <tr class="total-row">
-                <td colspan="3"></td>
+                <td colspan="4"></td>
                 <td colspan="2" class="label">Total</td>
                 <td colspan="2">Rs.${totalAmount.toFixed(2)}</td>
             </tr>
-            <tr>
-        <td colspan="7" class="terms-conditions">
-        <h4>Terms & Conditions :</h4>
-         <ol>
-            <li>Kindly issue a formal Work/Purchase Order in the name of ${selectedFirm.name}<br> ${selectedFirm.address}<br> GSTIN - ${selectedFirm.gstin} With the acceptance of this quotation</li>
-            <li>Loading & Unloading/Movement and shifting of material at the site is in your scope only.</li>
-            <li>Transportation charges extra mentioned in quote (delivery from Jaipur)</li>
-            <li>Payment terms - 100%advance along with purchase order.</li>
-            <li>Taxes extra on the above price according to the prevailing GST Module (@18%).</li>
-            <li>Delivery of the material in 4-5 days against the payment and purchase order.</li>
-        </ol>
-        </td>
-    </tr>
         </tbody>
+    </table>
+   <table class="tnc-table">
+        <tr>
+            <!-- Terms & Conditions Section -->
+            <td colspan="4" class="terms-conditions">
+                <h4>Terms & Conditions:</h4>
+                <ol>
+                    <li>Kindly issue a formal Work/Purchase Order in the name of <strong>${selectedFirm.name}</strong><br>${selectedFirm.address}<br>GSTIN - ${selectedFirm.gstin} with the acceptance of this quotation.</li>
+                    <li>Loading & Unloading/Movement and shifting of material at the site is in your scope only.</li>
+                    <li>Transportation charges extra as mentioned in the quote (delivery from Jaipur).</li>
+                    <li>Payment terms: 100% advance along with the purchase order.</li>
+                    <li>Taxes extra on the above price according to the prevailing GST Module (@18%).</li>
+                    <li>Delivery of the material in 4-5 days against the payment and purchase order.</li>
+                </ol>
+            </td>
+
+            <!-- Signature Section -->
+            <td colspan="4" class="signature-area">
+                <img src="${selectedFirm.seal}" alt="Signature" style="width: 180px; height: auto;"><br>
+                <span><strong>For ${selectedFirm.name}<br>Authorized Signatory</strong></span>
+            </td>
+        </tr>
     </table>
 
     <div class="clearfix"></div>
@@ -758,18 +827,24 @@ document.addEventListener('DOMContentLoaded', () => {
 </html>
         `;
 
-        // Open in a new window/tab and trigger print
+      // Open the new window
         const newWindow = window.open();
+
+        // Write the HTML content into the new window
         newWindow.document.write(quoteHtml);
-        newWindow.document.close(); // Important for some browsers to finish loading the content
-        
-        // Use a slight delay or onload event in the new window for more reliable printing
-        // DOMContentLoaded is often enough if all CSS is embedded
-        newWindow.document.addEventListener('DOMContentLoaded', () => {
-            newWindow.focus(); // Focus on the new window
-            newWindow.print(); // Trigger the browser's print dialog
-        });
-    }
+
+        // Listen for the window to fully load (including external resources like CSS, images, etc.)
+        newWindow.onload = () => {
+            // Focus on the new window
+            newWindow.focus();
+
+            // Trigger the print dialog
+            newWindow.print();
+        };
+
+        // Close the document stream
+        newWindow.document.close();
+        }
 
     // Initial item row, toggle Ship To, and summary update
     // Call toggleShipToFields to set initial state based on checkbox
