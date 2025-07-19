@@ -34,7 +34,15 @@
             </div>
             <div class="input-section">
                 <label for="salesperson">Salesperson:</label>
-                <input type="text" id="salesperson" placeholder="Salesperson Name" required>
+                <select id="salesperson" required>
+                    <option value="">Select Salesperson</option>
+                    <option>Rajesh Soni</option>
+                    <option>Sanjay Kumawat</option>
+                    <option>Poonam Tiwari</option>
+                    <option>Deepak Kumar</option>
+                    <option>Rohit Soni</option>
+                    <option>Prinka Sharma</option>
+                </select>
             </div>
         </div>
 
@@ -55,6 +63,10 @@
             <label for="billToContactNumber">Contact Person Number:</label>
             <input type="text" id="billToContactNumber" placeholder="Contact Person Number" required>
         </div>
+        <div class="input-section">
+            <label for="billToContactEmail">Contact Person Email:</label>
+            <input type="text" id="billToContactEmail" placeholder="Contact Person Email" required>
+        </div>
 
         <h2>Ship To</h2>
         <div class="input-section">
@@ -74,8 +86,12 @@
             <input type="text" id="shipToContactPerson" placeholder="Shipping Contact Person Name">
         </div>
          <div class="input-section">
-            <label for="shipToContactNumber">Contact Person:</label>
+            <label for="shipToContactNumber">Contact Number:</label>
             <input type="text" id="shipToContactNumber" placeholder="Shipping Contact Person Number" required>
+        </div>
+        <div class="input-section">
+            <label for="shipToContactEmail">Contact Person Email:</label>
+            <input type="text" id="shipToContactEmail" placeholder="Contact Person Email" required>
         </div>
 
         <h2>Items</h2>
@@ -85,7 +101,7 @@
                 <datalist id="skuOptions"></datalist>
                 <input type="number" class="qty-input" placeholder="Qty" min="1" value="1">
                 <span class="description-display"></span>
-                <span class="rate-display"></span>
+                <input type="number" class="rate-input" placeholder="Rate" min="0" step="0.01">
                 <input type="number" class="discount-per-item-input" placeholder="Disc (%)" min="0" max="100" value="0">
                 <span class="item-amount-display"></span>
                 <button type="button" class="remove-item-btn">X</button>
